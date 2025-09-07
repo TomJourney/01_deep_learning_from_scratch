@@ -33,15 +33,19 @@ print(np.sum(w * x) + b)  # -0.19999999999999996 大约为0.2
 
 # 2.3.3 与门版本2 使用权重和偏置的实现与门
 print("\n=== 2.3.3 与门版本2 使用权重和偏置的实现与门")
+
+
 def AND_v2(x1, x2):
     x = np.array([x1, x2])
     w = np.array([0.5, 0.5])
     b = -0.7
     temp = np.sum(w * x) + b
-    if temp <=0:
+    if temp <= 0:
         return 0
     else:
         return 1
+
+
 print(AND_v2(0, 0))
 print(AND_v2(1, 0))
 print(AND_v2(0, 1))
@@ -52,15 +56,19 @@ print(AND_v2(1, 1))
 # 1
 
 print("\n=== 非门 使用权重和偏置的实现非门")
+
+
 def NON_AND(x1, x2):
     x = np.array([x1, x2])
-    w = np.array([-0.5, -0.5]) # 权重与偏置与 AND不同
+    w = np.array([-0.5, -0.5])  # 权重与偏置与 AND不同
     b = 0.7
     temp = np.sum(w * x) + b
     if temp <= 0:
         return 0
     else:
         return 1
+
+
 print(NON_AND(0, 0))
 print(NON_AND(1, 0))
 print(NON_AND(0, 1))
@@ -71,15 +79,19 @@ print(NON_AND(1, 1))
 # 0
 
 print("\n=== 或门 使用权重和偏置的实现或门")
+
+
 def OR(x1, x2):
     x = np.array([x1, x2])
-    w = np.array([0.5, 0.5]) # 权重与偏置与 AND不同
+    w = np.array([0.5, 0.5])  # 权重与偏置与 AND不同
     b = -0.2
     temp = np.sum(w * x) + b
     if temp <= 0:
         return 0
     else:
         return 1
+
+
 print(OR(0, 0))
 print(OR(1, 0))
 print(OR(0, 1))
@@ -89,3 +101,22 @@ print(OR(1, 1))
 # 1
 # 1
 
+# 2.5.2 异或门的实现
+print("\n=== 2.5.2 异或门的实现")
+
+
+def XOR(x1, x2):
+    s1 = NON_AND(x1, x2)
+    s2 = OR(x2, x1)
+    y = AND(s1, s2)
+    return y
+
+
+print(XOR(0, 0))
+print(XOR(0, 1))
+print(XOR(1, 0))
+print(XOR(1, 1))
+# 0
+# 1
+# 1
+# 0
