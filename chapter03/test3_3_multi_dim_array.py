@@ -40,7 +40,7 @@ print(np.dot(A, B))
 #  [49 64]]
 
 # 3.3.3 神经网络的内积
-print("\n=== 3.3.3 神经网络的内积")
+print("\n=== 3.3.3 神经网络的内积(矩阵的点积)")
 X = np.array([1, 2])
 print(X.shape) # (2,)
 W = np.array([[1, 3, 5], [2, 4, 6]])
@@ -50,7 +50,7 @@ print(W.shape)
 #  [2 4 6]]
 # (2, 3)
 
-Y = np.dot(X, W)
+Y = np.dot(X, W) # 矩阵的点积
 print(Y)
 # [ 5 11 17]
 
