@@ -25,6 +25,30 @@ print(Z1) # [0.57444252 0.66818777 0.75026011]
 
 
 print("\n=== 第1层到第2层的信号传递")
-W2 = np.dot(Z1, W1)
+W2 = np.array([[0.1, 0.4], [0.2, 0.5], [0.3, 0.6]])
+B2 = np.array([0.1, 0.2])
+print(Z1.shape)
+print(W2.shape)
+print(B2.shape)
+# (3,)
+# (3, 2)
+# (2,)
+
+# 第1层神经元到第2层神经元的信号传递
+A2 = np.dot(Z1, W2) + B2
+print(A2) # [0.51615984 1.21402696]
+Z2 = sigmoid(A2)
+print(Z2) # [0.62624937 0.7710107 ]
+
+
+print("\n=== 第2层到输出层的信号传递")
+# identy_func : 是输出层的激活函数，也称恒等函数
+def identity_func(x):
+    return x
+W3 = np.array([[0.1, 0.3], [0.2, 0.4]])
+B3 = np.array([0.1, 0.2])
+A3 = np.dot(Z2, W3) + B3
+Y = identity_func(A3)
+
 
 
