@@ -357,9 +357,10 @@ $$
 
 <br>2）朴素感知机与多层感知机：
 
-朴素感知机：单层网络，指激活函数使用了阶跃函数的模型；（阶跃函数指一旦输入超过阈值，就切换输出的函数，如分段函数）
+- 朴素感知机：单层网络，指激活函数使用了阶跃函数的模型；（阶跃函数指一旦输入超过阈值，就切换输出的函数，如分段函数）
 
-多层感知机：指神经网络，即使用sigmoid函数等平滑的激活函数的多层网络；
+- 多层感知机：指神经网络，即使用sigmoid函数等平滑的激活函数的多层网络；
+
 
 <br>
 
@@ -373,7 +374,142 @@ $$
 $$
 h(x)=\frac{1}{1+exp(-x)}
 $$
-其中 exp(-x)表示$$ e^{-x} $$ ，e是纳皮尔常数 2.7182... 
+其中 exp(-x)表示$$ e^{-x} $$ ，e是纳皮尔常数 2.7182...
+
+<font color=red>补充：感知机与神经网络的主要区别</font>
+
+- 感知机：使用阶跃函数作为激活函数；
+- 神经网络：使用sigmoid函数作为激活函数；
+
+<br>
+
+---
+
+### 【3.2.2】阶跃函数的实现
+
+```python
+# 阶跃函数
+def step_function(x):
+    y = x > 0
+    return y.astype(int)
+
+x = np.array([-1.0, 1.0, 2.0])
+print(x)  # [-1.  1.  2.]
+y = x > 0
+print(y)  # [False  True  True]
+
+# 布尔类型转为int型
+print(y.astype(int)) # [0 1 1]
+```
+
+<br>
+
+【阶跃函数的图形】
+
+```python
+import numpy as np
+import matplotlib.pylab as plt
+
+# 3.2.3 阶跃函数的图形
+def step_function(x):
+    return np.array(x>0, dtype=int)
+
+x = np.arange(-5.0, 5.0, 0.1)
+y = step_function(x)
+plt.plot(x, y)
+plt.ylim(-0.1, 1.1) # 指定y轴的范围
+plt.show()
+
+```
+
+![image-20250907220402132](./ch03_p45.png)
+
+<br>
+
+---
+
+### 【3.2.4】sigmoid函数的实现
+
+1）sigmoid函数：
+
+```python
+def sigmoid(x):
+    return 1 / (1 + np.exp(-x))
+```
+
+### 【3.2.5】sigmoid函数和阶跃函数的比较
+
+```python
+import numpy as np
+import matplotlib.pylab as plt
+
+# 3.2.5 sigmoid函数和阶跃函数的比较
+def sigmoid(x):
+    return 1 / (1 + np.exp(-x))
+
+# sigmoid 画图
+x = np.arange(-5.0, 5.0, 0.1)
+y = sigmoid(x)
+plt.plot(x, y)
+plt.ylim(-0.1, 1.1) # 指定y轴范围
+
+# 阶跃函数画图
+def step_function(x):
+    return np.array(x>0, dtype=int)
+
+x = np.arange(-5.0, 5.0, 0.1)
+y = step_function(x)
+plt.plot(x, y, linestyle='--')
+plt.ylim(-0.1, 1.1) # 指定y轴的范围
+plt.show()
+
+```
+
+![image-20250907220402132](./ch03_p47.png)
+
+
+
+<br>
+
+### 【3.2.6】非线性函数
+
+1）神经网络的激活函数，必须使用非线性函数； 
+
+因为，为了发挥叠加层所带来的优势，神经网络的激活函数必须使用非线性函数；
+
+<br> 
+
+### 【3.2.7】ReLU函数
+
+1）ReLU函数定义： 整流线性单位函数（Rectified Linear Unit, ReLU），又称修正线性单元，<font color=red>是一种人工神经网络中常用的激励函数（activation function）</font>，通常指代以斜坡函数及其变种为代表的非线性函数。
+2）比较常用的线性整流函数有斜坡函数：$$f(x)=max(0,x)$$。
+
+3）ReLU函数的实例如下：
+$$
+h(x)=\begin{cases}
+x \quad (x>0)\\
+0 \quad (x<=0)\\
+\end{cases}
+$$
+![image-20250907220402132](./ch03_p50.png)
+
+<br>
+
+---
+
+## 【3.3】多维数组的运算
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
