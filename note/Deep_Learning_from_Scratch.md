@@ -368,6 +368,8 @@ $$
 
 ## 【3.2】激活函数
 
+1）激活函数定义：把输入信号的总和转换为输出信号的函数；作用在于如何激活输入信号的总和；
+
 ### 【3.2.1】sigmoid函数
 
 1）sigmoid函数：神经网络中常用的一种激活函数；
@@ -497,7 +499,215 @@ $$
 
 ---
 
-## 【3.3】多维数组的运算
+## 【3.4】3层神经网络的实现
+
+### 【3.4.3】代码实现小结
+
+1）神经网络代码实现小结
+
+```python
+import numpy as np
+
+# 使用激活函数sigmoid转换神经元的加权和
+def sigmoid(x):
+    return 1 / (1 + np.exp(-x))
+
+# identy_func : 是输出层的激活函数，也称恒等函数
+def identity_func(x):
+    return x
+
+# 3.4.3 神经网络代码实现小结
+def init_network():
+    network = dict()
+    network['W1'] = np.array([[0.1, 0.3, 0.5], [0.2, 0.4, 0.6]])
+    network['b1'] = np.array([0.1, 0.2, 0.3])
+    network['W2'] = np.array([[0.1, 0.4], [0.2, 0.5], [0.3, 0.6]])
+    network['b2'] = np.array([0.1, 0.2])
+    network['W3'] = np.array([[0.1, 0.3], [0.2, 0.4]])
+    network['b3'] = np.array([0.1, 0.2])
+    return network
+
+# 前向传播
+def forward(network, x):
+    W1, W2, W3 = network['W1'], network['W2'], network['W3']
+    b1, b2, b3 = network['b1'], network['b2'], network['b3']
+
+    a1 = np.dot(x, W1) + b1
+    z1 = sigmoid(a1)
+    a2 = np.dot(z1, W2) + b2
+    z2 = sigmoid(a2)
+    a3 = np.dot(z2, W3) + b3
+    y = identity_func(a3)
+
+    return y
+
+# 调用神经网络初始化函数，前向传播函数
+network = init_network()
+x = np.array([1.0, 0.5])
+y = forward(network, x)
+print(y) #[0.31682708 0.69627909]
+
+```
+
+【函数介绍】
+
+- init_network()：初始化神经网络的权重和偏置；把权重和偏置保存到字典变量network中；network字典变量保存了每一层所需的参数；
+- forward()-前向函数：封装了将输入信号转为输出信号的过程；
+
+2）神经网络输入信号到输出信号传递示意图
+
+![image-20250913214342117](./ch03_p62_1copy.png)
+
+<br>
+
+---
+
+### 【3.4.4】三层神经网络结构 
+
+![image-20250913214539513](./ch03_p62_1copyb.png)
+
+<br>
+
+---
+
+## 【3.5】输出层的设计 
+
+### 【3.5.1】激活函数分类
+
+1）神经网络可以用在分类问题与回归问题上，不过需要根据实际情况修改激活函数；
+
+- 回归问题：使用恒等函数作为激活函数； （恒等函数： identity_function）
+- 分类问题：使用softmax函数作为激活函数；
+
+<br>
+
+---
+
+### 【3.5.2】恒等函数
+
+1）恒等函数定义：把输入按照原样输出的函数；如 f(x)=x 
+
+![image-20250913214539513](./ch03_p64.png)
+
+<br>
+
+---
+
+### 【3.5.3】softmax函数
+
+1）softmax函数定义：Softmax函数是一种将任意实数向量转化为概率分布的归一化指数函数，其输出向量的每个元素都在0到1之间，且所有元素的和为1。
+
+- softmanx作用：它主要用于多分类问题中，作为神经网络的最后一层输出层，将原始分数转化为表示每个类别概率的向量，从而使模型能够对不同类别进行概率预测。﻿
+
+2）softmax函数公式如下：
+$$
+y_k=\frac{exp(a_k)}{\sum_{i=1}^{n}exp(a_i)}
+$$
+softmax函数的图像如下。
+
+
+
+![image-20250913214539513](./ch03_p65.png)
+
+
+
+3）softmax函数的代码实现：
+
+```python
+import numpy as np
+
+# 3.5 输出层的设计
+# 激活函数选择：
+# 回归问题使用恒等函数， 分类问题使用softmax函数
+a = np.array([0.3, 2.9, 4, 0])
+exp_a = np.exp(a)  # 指数函数
+print(exp_a)
+# [ 1.34985881 18.17414537 54.59815003  1.        ]
+
+print("\n=== 计算指数函数的和")
+sum_exp_a = np.sum(exp_a)
+print(sum_exp_a)  # 75.1221542101633
+
+print("\n=== 计算softmax函数值")
+y = exp_a / sum_exp_a
+print(y)  # [0.01796885 0.2419279  0.72679159 0.01331165]
+
+
+# 定义softmax函数
+def softmax(x):
+    exp_a = np.exp(x)  # 计算指数函数
+    sum_exp_a = np.sum(exp_a)  # 指数函数值求和
+    y = exp_a / sum_exp_a  # 每个元素的指数函数值 除以 求和值
+    return y
+
+
+# 定义解决溢出问题的softmax函数
+def softmax_no_overflow(x):
+    c = np.max(x)
+    exp_a = np.exp(x - c)
+    sum_exp_a = np.sum(exp_a)
+    y = exp_a / sum_exp_a
+    return y
+
+# 验证解决溢出问题的softmax函数
+print("\n=== 验证解决溢出问题的softmax函数")
+x = np.array([0.3, 2.9, 4.0])
+y = softmax_no_overflow(x)
+print(y) # [0.01821127 0.24519181 0.73659691]
+print(np.sum(y)) # 1.0
+```
+
+<br>
+
+---
+
+### 【3.5.4】求解机器学习问题总结（学习+推理）
+
+1）求解机器学习问题步骤：包括学习与推理；
+
+- 学习阶段：在学习阶段进行模型的学习；
+- 推理阶段：在推理阶段，用学到的模型对未知的数据进行推理（分类）；
+
+<br>
+
+---
+
+## 【3.6】手写数字识别（推理实践）
+
+1）前向传播： 我们使用学习到的参数，先实现神经网络的推理处理，这个推理处理的过程称为神经网络的前向传播； 
+
+### 【3.6.0】使用神经网络解决问题的步骤
+
+- 步骤1：使用训练数据进行权重参数的学习；
+- 步骤2：推理时，使用步骤1学习得到的参数，对输入数据进行分类； 
+
+<br>
+
+---
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ 
+
+
 
 
 
