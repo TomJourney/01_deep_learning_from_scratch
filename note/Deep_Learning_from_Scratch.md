@@ -749,6 +749,8 @@ img_show(img)
 
 2）推理处理代码：
 
+【推理函数】
+
 ```python
 import numpy as np
 import pickle
@@ -782,21 +784,38 @@ def predict(network, x):
     y = softmax_no_overflow(a3)
 
     return y
+```
+
+【推理执行】
+
+```python
+import numpy as np
+import pickle
+import sys, os
+from common.neural_network_active_func import sigmoid, softmax_no_overflow
+
+sys.path.append(os.pardir)  # 为了导入父目录中的文件而设定
+from dataset.mnist import load_mnist
+import test3_6_1_neural_network_infer_func as infer_func
+
+# 3.6.2 神经网络的推理处理
+
 
 # ******************** 执行神经网络的推理处理
-x, t = get_data() # 获取测试数据，包括测试图像x，测试标签t
-network = init_network() # 初始化神经网络(读入保存在pickle文件sample_weight.pkl中学习到的权重参数)
+x, t = infer_func.get_data()  # 获取测试数据，包括测试图像x，测试标签t
+network = infer_func.init_network()  # 初始化神经网络(读入保存在pickle文件sample_weight.pkl中学习到的权重参数)
 
 accuracy_cnt = 0  # 识别准确的个数
-for i in range(len(x)): # 遍历测试图像x
+for i in range(len(x)):  # 遍历测试图像x
     # 预测分类
-    y = predict(network, x[i]) # 预测得到预测值
-    p = np.argmax(y) # 获取y的数组中最大值的索引
+    y = infer_func.predict(network, x[i])  # 预测得到预测值
+    p = np.argmax(y)  # 获取y的数组中最大值的索引
     if p == t[i]:
         accuracy_cnt += 1
 
 print("accuracy: ", str(float(accuracy_cnt / len(x))))
-# accuracy:  0.9207 # 分类准确率 
+# accuracy:  0.9207
+
 ```
 
 【补充】
@@ -809,9 +828,60 @@ print("accuracy: ", str(float(accuracy_cnt / len(x))))
 
 ### 【3.6.3】批处理 
 
-1）输出3.6.2中神经网络的各层形状； 
+1）批处理定义： 对输入信号批量处理，提高处理效率；
 
+- 批：打包式的输入数据称为批； 
 
+2）输出3.6.2中神经网络的各层形状； 
+
+```python
+import sys, os
+sys.path.append(os.pardir)  # 为了导入父目录中的文件而设定
+import test3_6_1_neural_network_infer_func as infer_func
+
+# 3.6.3 批处理
+# 打印神经网络各层形状
+x, _ = infer_func.get_data()
+network = infer_func.init_network()
+W1, W2, W3 = network['W1'], network['W2'], network['W3']
+print(x.shape)  # (10000, 784)
+print(x[0].shape)  # (784,)  输入层，第0层
+print(W1.shape)  # (784, 50)  中间层，第1层
+print(W2.shape)  # (50, 100)  中间层，第2层
+print(W3.shape)  # (100, 10)  输出层， 第3层
+```
+
+3）基于批处理的神经网络推理代码实现：
+
+```python
+import sys, os
+import numpy as np
+
+sys.path.append(os.pardir)  # 为了导入父目录中的文件而设定
+import test3_6_1_neural_network_infer_func as infer_func
+
+# 【基于批处理的神经网络推理代码实现】 
+x, t = infer_func.get_data()  # x=测试集 t=测试标签
+network = infer_func.init_network()
+
+# 批次数量
+batch_size = 2000
+accuracy_cnt = 0
+print(x.shape) # (10000, 784)
+print(t.shape) # (10000,)
+
+# 基于批处理的推理
+for i in range(0, len(x), batch_size):
+    x_batch = x[i:i + batch_size] # 取出分批数据，每批一个单位
+    print(x_batch.shape) # (2000, 784)
+    y_batch = infer_func.predict(network, x_batch) # 以批为单位执行预测分类，得到概率数组
+    print(y_batch.shape) # (2000, 10)
+    p = np.argmax(y_batch, axis=1) # 概率最大的索引
+    accuracy_cnt += np.sum(p == t[i:i + batch_size])
+
+print("预测准确率 = " + str(float(accuracy_cnt / len(x))))
+# 预测准确率 = 0.9207
+```
 
 
 
