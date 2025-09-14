@@ -685,6 +685,136 @@ print(np.sum(y)) # 1.0
 
 ---
 
+### 【3.6.1】MNIST数据集
+
+1）导入数据集
+
+```python
+import numpy as np
+import sys, os
+
+sys.path.append(os.pardir)  # 为了导入父目录中的文件而设定
+from dataset.mnist import load_mnist
+from PIL import Image # PIL -> Python Image Library # python图像库
+
+
+# 3.6.1 mnist 数据集
+def img_show(img):
+    # np.uint8(img) 这一句是 把 img 转换成 numpy 的无符号 8 位整数类型
+    pil_img = Image.fromarray(np.uint8(img)) # 把numpy数组的图像数据转为PIL对象
+    pil_img.show()
+
+
+# 读取mnist数据集 , flatten=True表示读入的图像是一维的，
+(x_train, t_train), (x_test, t_test) = load_mnist(flatten=True, normalize=False, one_hot_label=False)
+img = x_train[0]
+lable = t_train[0]
+print(lable)  # 训练集的测试标签 5
+
+print(img.shape)  # (784,)
+img = img.reshape(28, 28)  # 读入的图像是一维的，显示时，需要把图像的形状变为原来的尺寸(28 * 28 )
+print(img.shape)  # (28, 28)
+
+# 显示图像
+img_show(img)
+
+```
+
+【代码解说】
+
+- sys.path.append(os.pardir) 作用：
+
+  - sys.path：这是一个Python 列表，它包含了Python 解释器在导入（import）模块时会查找的所有目录路径。﻿
+
+  - os.pardir：这是 os 模块中的一个常量，它代表字符串 '..'，表示当前目录的父目录或上一级目录。﻿
+
+  - append() 方法：这是Python 列表的一个方法，用于在列表的末尾添加一个元素。﻿
+  - 当前目录的父目录添加到python解释器用于查找模块的目录中去，使用以后，python就可以找到当前目录的父目录中的模块。
+
+- 使用 load_minst函数可以轻松读入MNIST数据。
+
+<br>
+
+---
+
+### 【3.6.2】神经网络的推理处理 
+
+1）针对MNIST书记实现神经网络的推理处理：
+
+- 神经网络输入层有784个神经元（28 * 28），因为图像大小=28*28；
+- 输出层有 10 个神经元（数字0-9，共10个类别） ；
+- 神经网络共有2个隐藏层：
+  - 第1层有50个神经元；
+  - 第2层有100个神经元；
+
+2）推理处理代码：
+
+```python
+import numpy as np
+import pickle
+import sys, os
+from common.neural_network_active_func import sigmoid, softmax_no_overflow
+sys.path.append(os.pardir) # 为了导入父目录中的文件而设定
+from dataset.mnist import load_mnist
+
+# 3.6.2 神经网络的推理处理
+def get_data():
+    # 获取测试数据，包括测试图像，测试标签
+    (x_train, t_train), (x_test, t_test) = load_mnist(flatten=True, normalize=False, one_hot_label=False)
+    return x_test, t_test
+
+def init_network():
+    # 读入保存在pickle文件sample_weight.pkl中学习到的权重参数
+    with open("../dataset/sample_weight.pkl", "rb") as f:
+        network = pickle.load(f)
+    return network
+
+# 预测分类
+def predict(network, x):
+    W1, W2, W3 = network["W1"], network["W2"], network["W3"]
+    b1, b2, b3 = network["b1"], network["b2"], network["b3"]
+
+    a1 = np.dot(x, W1) + b1
+    z1 = sigmoid(a1)
+    a2 = np.dot(z1, W2) + b2
+    z2 = sigmoid(a2)
+    a3 = np.dot(z2, W3) + b3
+    y = softmax_no_overflow(a3)
+
+    return y
+
+# ******************** 执行神经网络的推理处理
+x, t = get_data() # 获取测试数据，包括测试图像x，测试标签t
+network = init_network() # 初始化神经网络(读入保存在pickle文件sample_weight.pkl中学习到的权重参数)
+
+accuracy_cnt = 0  # 识别准确的个数
+for i in range(len(x)): # 遍历测试图像x
+    # 预测分类
+    y = predict(network, x[i]) # 预测得到预测值
+    p = np.argmax(y) # 获取y的数组中最大值的索引
+    if p == t[i]:
+        accuracy_cnt += 1
+
+print("accuracy: ", str(float(accuracy_cnt / len(x))))
+# accuracy:  0.9207 # 分类准确率 
+```
+
+【补充】
+
+- sample_weight.pkl  权重参数文件，从 [源码官网](https://www.ituring.com.cn/book/1921)下载
+
+<br>
+
+---
+
+### 【3.6.3】批处理 
+
+1）输出3.6.2中神经网络的各层形状； 
+
+
+
+
+
 
 
 
