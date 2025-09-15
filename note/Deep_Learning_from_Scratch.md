@@ -883,17 +883,195 @@ print("预测准确率 = " + str(float(accuracy_cnt / len(x))))
 # 预测准确率 = 0.9207
 ```
 
+<br>
+
+---
+
+# 【4】神经网络的学习
+
+1）学习定义： 指从训练数据中自动获取最优权重参数的过程； 
+
+### 【4.1.2】训练数据与测试数据
+
+1）泛化能力：指处理未被观察过的数据的能力。获得泛化能力是机器学习的最终目标； 
+
+2）为了准确评价模型的泛化能力，必须划分训练数据和测试数据；
+
+<br>
+
+---
+
+## 【4.2】损失函数
+
+1）损失函数定义： 神经网络寻找最优权重参数的指标；
+
+- 损失函数：表示神经网络性能的恶劣程度的指标，即当前的神经网络对监督数据在多大程度上不拟合；
+
+<br>
+
+### 【4.2.1】均方误差
+
+1）均方误差定义：表示预测值与真实值间差值的平方的均值。
+
+公式如下：
+$$
+E=\frac{1}{2}\sum_{i=1}^{n}(y_i-t_i)^2
+$$
+2）代码实现：
+
+```python
+import numpy as np
+
+# 均方误差函数
+def mean_squared_error(y, t):
+    return 0.5 * np.sum((y-t) ** 2)
+
+# 测试 均方误差函数
+# 例1： 索引为2的概率最高，0.6
+y1 = [0.1, 0.05, 0.6, 0.0, 0.05, 0.1, 0.0, 0.1, 0.0, 0.0]
+t = [0, 0, 1, 0, 0, 0, 0, 0, 0, 0]
+print(mean_squared_error(np.array(y1), np.array(t))) # 0.09750000000000003
+
+# 例2： 索引为7的概率最高 0.6
+y2 = [0.1, 0.05, 0.1, 0.0, 0.05, 0.1, 0.0, 0.6, 0.0, 0.0]
+print(mean_squared_error(np.array(y2), np.array(t))) # 0.5975
+```
+
+<br>
+
+---
+
+### 【4.2.2】交叉熵误差
+
+1）交叉熵误差定义：度量两个概率分布间的差异；
+
+- 熵定义：无损编码事件信息的最小平均编码长度。
+
+公式如下：
+$$
+E=-\sum_{i=1}^{n}t_i\log{y_i}
+$$
+
+- 其中， $y_i$是神经网络输出，$t_i$是正确解标签（取值1）； 
+- $t_i$中只有正确解标签的索引为1，其他均为0（one-hot表示）
+- 因此，上述公式实际上只计算对应正确解标签的输出的自然对数；
+- <font color=red>交叉熵误差的值</font>：是由正确解标签所对应的输出结果决定的； 
+  - 如，正确解标签索引是2，对应的神经网络输出是0.6，则交叉熵损失是 $-\log{0.6}$=0.51
+
+2）$y=-\log{x}$图像（辅助理解交叉熵损失函数）：
 
 
 
+3）python代码实现：
+
+```python
+import numpy as np
+
+# 交叉熵损失函数 cross entropy error
+def cross_entropy_error(y, t):
+    delta = 1e-7
+    return -np.sum(t * np.log(y + delta))
+
+# 测试 交叉熵损失函数
+# 例1： 索引为2的概率最高，0.6
+y1 = [0.1, 0.05, 0.6, 0.0, 0.05, 0.1, 0.0, 0.1, 0.0, 0.0]
+t = [0, 0, 1, 0, 0, 0, 0, 0, 0, 0]
+print(cross_entropy_error(np.array(y1), np.array(t))) # 0.510825457099338
+
+# 例2： 索引为7的概率最高 0.6
+y2 = [0.1, 0.05, 0.1, 0.0, 0.05, 0.1, 0.0, 0.6, 0.0, 0.0]
+print(cross_entropy_error(np.array(y2), np.array(t))) # 2.302584092994546
+```
+
+【补充】
+
+函数内部在计算np.log时，加上了一个微小值delta。这是因为当出现np.log(0)时，np.log(0)会变为负无限大的-inf，这会导致计算无法正常进行。
+
+<br>
+
+---
+
+### 【4.2.3】mini-batch学习（小批量学习）
+
+1）mini-batch学习定义： 神经网络从训练数据中选出一批数据（称为mini-batch，小批量），然后对每个mini-batch进行学习；
+
+- 如，从60000个训练数据中随机选择100笔作为mini-batch，然后再针对这个mini-batch进行学习；
+
+2）计算所有训练数据的交叉熵误差（<font color=red>把单个数据的交叉熵误差扩展到N份数据</font>）：
+$$
+E=-\frac{1}{N}\sum_{i}^{n}\sum_{j}^{m}t_{ij}\log{y_{ij}}
+$$
+
+- 其中 $t_{ij}$表示第i个数据的第j个元素的值， 其中$y_{ij}$ 是神经网络输出，$t_{ij}$ 是监督数据；
+- 通过除以n，可以计算单个数据的平均损失函数；
+- 通过平均化，可以获得和训练数据的数据无关的统一指标； 
+
+3）代码实现抽取mini-batch：
+
+```python
+import sys, os
+sys.path.append(os.pardir)
+import numpy as np
+from dataset.mnist import load_mnist
+
+# 导入mnist 数据集
+(x_train, t_train), (x_test, t_test) = load_mnist(normalize=True, one_hot_label=True)
+
+# 打印mnist数据集中训练数据，测试数据的形状
+print(x_train.shape) # (60000, 784)
+print(t_train.shape) # (60000, 10)
+
+# 抽取小批量-minibatch
+print("\n=== 抽取小批量-minibatch ")
+train_size = x_train.shape[0]
+print("train_size:", train_size) # train_size: 60000
+batch_size = 10
+# np.random.choice(60000， 10) 从0到59999之间随机选择10个数字
+batch_mask = np.random.choice(train_size, batch_size)
+print(batch_mask) # [48518 20742 15521 28731 49193 47555 22867 15607 56529 53532]
+
+print("\n=== 选择的小批量数据如下：")
+x_batch = x_train[batch_mask]
+t_batch = t_train[batch_mask]
+print(x_batch)
+print(t_batch)
+```
+
+<br>
+
+---
+
+### 【4.2.4】mini-batch版本的交叉熵误差实现 
+
+1）实现可以同时处理单个和批量数据（mini-batch）的两种情况的函数；
+
+函数1）one-hot标签的mini-batch版本的交叉熵损失函数 ：
+
+```python
+# one-hot标签的mini-batch版本的交叉熵损失函数 cross entropy error
+def one_hot_mini_batch_cross_entropy_error(y, t):
+    if y.ndim == 1:
+        t = t.reshape(1, t.size)
+        y = y.reshape(1, y.size)
+    batch_size = y.shape[0]
+    return -np.sum(t * np.log(y + 1e-7)) / batch_size
+```
+
+【补充】one-hot标签指0 1 标签； 
 
 
 
+函数2）非one-hot标签的mini-batch版本的交叉熵损失函数：
 
-
-
-
-
+```python
+# 非one-hot标签的mini-batch版本的交叉熵损失函数 cross entropy error
+def non_one_hot_mini_batch_cross_entropy_error(y, t):
+    if y.ndim == 1:
+        t = t.reshape(1, t.size)
+        y = y.reshape(1, y.size)
+    batch_size = y.shape[0]
+    return -np.sum(t * np.log(y[np.arange(batch_size), t] + 1e-7)) / batch_size
+```
 
 
 
