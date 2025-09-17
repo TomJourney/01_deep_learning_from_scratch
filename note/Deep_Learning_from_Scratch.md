@@ -897,6 +897,9 @@ print("预测准确率 = " + str(float(accuracy_cnt / len(x))))
 
 2）为了准确评价模型的泛化能力，必须划分训练数据和测试数据；
 
+- 训练数据：包括训练特征，训练标签；
+- 测试数据：包括测试特征，测试标签；
+
 <br>
 
 ---
@@ -905,7 +908,7 @@ print("预测准确率 = " + str(float(accuracy_cnt / len(x))))
 
 1）损失函数定义： 神经网络寻找最优权重参数的指标；
 
-- 损失函数：表示神经网络性能的恶劣程度的指标，即当前的神经网络对监督数据在多大程度上不拟合；
+- 损失函数：表示神经网络性能的恶劣程度（不拟合程度）的指标，即当前的神经网络对监督数据在多大程度上不拟合；
 
 <br>
 
@@ -1020,7 +1023,7 @@ $$
 E=-\frac{1}{N}\sum_{i}^{n}\sum_{j}^{m}t_{ij}\log{y_{ij}}
 $$
 
-- 其中 $t_{ij}$表示第i个数据的第j个元素的值， 其中$y_{ij}$ 是神经网络输出，$t_{ij}$ 是监督数据；
+- 其中 $t_{ij}$表示第i个数据项的第j个元素的值， 其中$y_{ij}$ 是神经网络输出，$t_{ij}$ 是标签数据；
 - 通过除以n，可以计算单个数据的平均损失函数；
 - 通过平均化，可以获得和训练数据的数据无关的统一指标； 
 
@@ -1034,6 +1037,10 @@ from dataset.mnist import load_mnist
 
 # 导入mnist 数据集
 (x_train, t_train), (x_test, t_test) = load_mnist(normalize=True, one_hot_label=True)
+# x_train 训练特征
+# t_train 测试特征
+# x_test 训练标签 
+# t_test 测试标签 
 
 # 打印mnist数据集中训练数据，测试数据的形状
 print(x_train.shape) # (60000, 784)
@@ -1055,6 +1062,15 @@ print(x_batch)
 print(t_batch)
 ```
 
+【补充】
+
+```python
+# x_train 表示训练特征
+# t_train 表示训练标签
+# x_test  表示测试特征
+# t_test  表示测试标签
+```
+
 <br>
 
 ---
@@ -1068,14 +1084,17 @@ print(t_batch)
 ```python
 # one-hot标签的mini-batch版本的交叉熵损失函数 cross entropy error
 def one_hot_mini_batch_cross_entropy_error(y, t):
+    # 若轴个数为1，即一维数组，则转为二维数组 
+    # ndim表示轴个数 
     if y.ndim == 1:
         t = t.reshape(1, t.size)
         y = y.reshape(1, y.size)
+    # y向量在第0轴的长度
     batch_size = y.shape[0]
     return -np.sum(t * np.log(y + 1e-7)) / batch_size
 ```
 
-【补充】one-hot标签指0 1 标签； 
+【补充】one-hot标签指0 1 标签，即标签数据t向量的取值为0或1 ； 
 
 
 

@@ -4,6 +4,10 @@ import numpy as np
 from dataset.mnist import load_mnist
 
 # 导入mnist 数据集
+# x_train 表示训练特征
+# t_train 表示训练标签
+# x_test  表示测试特征
+# t_test  表示测试标签
 (x_train, t_train), (x_test, t_test) = load_mnist(normalize=True, one_hot_label=True)
 
 # 打印mnist数据集中训练数据，测试数据的形状
