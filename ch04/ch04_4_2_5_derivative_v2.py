@@ -4,13 +4,12 @@ import matplotlib.pyplot as plt
 
 # 基于中心差分的数值梯度
 def numerical_diff_v2(f, x):
-h = 1e-4  # 0.0001
-return (f(x + h) - f(x - h)) / (2 * h)
-
+    h = 1e-4  # 0.0001
+    return (f(x + h) - f(x - h)) / (2 * h)
 
 # 测试案例
 def function_1(x):
-return 0.01 * x ** 2 + 0.1 * x
+    return 0.01 * x ** 2 + 0.1 * x
 
 
 x = np.arange(0.0, 20.0, 0.1)  # 以0.1为单位，从0到20的数组x
