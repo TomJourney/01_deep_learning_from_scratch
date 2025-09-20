@@ -1304,7 +1304,59 @@ print(devivativeV2.numerical_diff_v2(func_2, 4.0)) # 7.999999999999119
 
 2）数值梯度函数：
 
+【ch04_4_4_gradient.py】
 
+```python
+import numpy as np
+import matplotlib.pylab as plt
+from mpl_toolkits.mplot3d import Axes3D
+
+# 梯度
+def numerical_gradient(f, x):
+    h = 1e-4 # 0.0001
+    grad = np.zeros_like(x) # 生成与x形状相同的所有元素都为0的数组
+
+    # 遍历索引
+    for index in range(x.size):
+        temp_value = x[index]
+        # f(x+h)的计算
+        x[index] = temp_value +h
+        fxh1 = f(x)
+
+        # f(x-h)的计算
+        x[index] = temp_value - h
+        fxh2 = f(x)
+
+        grad[index] = (fxh1 - fxh2) / (2*h)
+        x[index] = temp_value # 还原值
+    return grad
+```
+
+【测试案例】ch04_4_4_gradient_test.py
+
+```python
+import numpy as np
+import matplotlib.pylab as plt
+import ch04_4_4_gradient as grad
+import ch04_4_3_3_partial_derivative_src_func as src_func2
+
+# 计算梯度
+# 计算在 (3,4)  (0,2) (3,0) 处的梯度
+print(grad.numerical_gradient(src_func2.func2, np.array([3.0, 4.0])))
+print(grad.numerical_gradient(src_func2.func2, np.array([0, 2.0])))
+print(grad.numerical_gradient(src_func2.func2, np.array([3.0, 0.0])))
+# [6. 8.]
+# [0. 4.]
+# [6. 0.]
+```
+
+<br>
+
+---
+
+### 【4.4.1】梯度法 
+
+1）梯度法定义： 使用梯度来寻找损失函数最小值时的参数的方法；（补充：机器学习的主要任务是在学习时寻找最优参数，其中最优参数是损失函数取最小值的参数）
 
 
 
