@@ -1217,15 +1217,92 @@ print(numerical_diff_v2(function_1, 10))  # 0.2999999999986347
 
 ### 【4.3.3】偏导数 
 
-1）偏导数定义：指对多变量的函数（多元函数）其中一个变量求导，而其他变量保持不变的计算过程。
+1）偏导数定义：指对多变量的函数（多元函数）其中一个变量求导，而其他变量保持不变的计算过程。求函数f对变量x的偏导的数学式为 $\frac{\partial f}{\partial x}$
 
 - 导数定义：这个函数在这一点附近的变化率（即函数在这一点的切线斜率）。
 
 2）例子： $f(x_0,x_1)=x_0^{2}+x_1^{2}$
 
+```python
+# 偏导数
+# f(x0,x1) = x0^2 + x1 ^2
+def function_2(x):
+    return x[0]**2 + x[1]**2
+    # return np.sum(x**2)
+```
 
+【$f(x_0,x_1)=x_0^{2}+x_1^{2}$图像代码实现】
 
+```python
+import numpy as np
+import matplotlib.pylab as plt
+from mpl_toolkits.mplot3d import Axes3D
 
+# f(x0,x1) = x0^2 + x1 ^2 图像
+# 创建x0和x1的网格
+x0 = np.linspace(-5, 5, 200)
+x1 = np.linspace(-5, 5, 200)
+X0, X1 = np.meshgrid(x0, x1)
+
+# 计算z值
+Z = X0**2 + X1**2
+
+# 创建3D图形
+fig = plt.figure(figsize=(10, 8))
+ax = fig.add_subplot(111, projection='3d')
+
+# 绘制表面图
+surf = ax.plot_surface(X0, X1, Z, cmap='viridis', alpha=0.8)
+
+# 设置标签
+ax.set_xlabel('x0')
+ax.set_ylabel('x1')
+ax.set_zlabel('z = x0² + x1²')
+ax.set_title('z = x0² + x1²')
+
+# 添加颜色条
+fig.colorbar(surf, shrink=0.5, aspect=10)
+
+# 显示图形
+plt.tight_layout()
+plt.show()
+```
+
+![图像](./ch04_p99.png)
+
+3）计算 f(x0,x1) 在$x_0$=3，$x_1$=4的偏导数
+
+```python
+import numpy as np
+import matplotlib.pyplot as plt
+import ch04_4_2_5_derivative_v2 as devivativeV2
+
+# 计算偏导数
+# 计算 f(x0,x1) 在x0=3，x1=4的偏导数
+# f(x0,x1) = x0^2 + x1 ^2
+
+# 计算 f(x0,x1) 在x0=3的偏导数，固定x1=4
+def func_1(x0):
+    return x0**2 + 4**2
+print(devivativeV2.numerical_diff_v2(func_1, 3.0))
+# 6.00000000000378
+
+# 计算 f(x0,x1) 在x1=4的偏导数，固定x0=3 
+def func_2(x1):
+    return 3.0**2 + x1**2
+
+print(devivativeV2.numerical_diff_v2(func_2, 4.0)) # 7.999999999999119
+```
+
+<br>
+
+---
+
+## 【4.4】梯度
+
+1）梯度定义：多变量函数（多元函数）的全部变量的偏导数汇总的向量，形如$(\frac{\partial f}{\partial x_0},\frac{\partial f}{\partial x_1})$；
+
+2）数值梯度函数：
 
 
 
