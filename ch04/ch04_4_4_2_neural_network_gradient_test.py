@@ -1,5 +1,6 @@
 import ch04_4_4_2_neural_network_gradient as net_grad
 import numpy as np
+import ch04_4_4_gradient as grad
 
 # 测试案例：计算神经网络的梯度
 network = net_grad.simpleNet()
@@ -21,8 +22,20 @@ print("\n=== 计算概率最大值的索引")
 print(np.argmax(p))
 # 1
 
-print("\\n=== 计算损失函数")
-t = np.array([0, 0, 1])
+print("\n=== 计算损失函数")
+t = np.array([0, 0, 1])  # 正确解标签
 print(network.loss(x, t))
 # 1.1234180817699424
 
+
+##  计算梯度
+print("\n=== 权值, network.W = ")
+print(network.W)
+# [[ 1.52433042  1.36467856 -1.01818566]
+#  [ 0.19266843  0.26531208  0.94796842]]
+
+print("\n=== 计算梯度")
+def busi_func(W):
+    return network.loss(x,t)
+dW = grad.numerical_gradient(busi_func, network.W)
+print(dW)

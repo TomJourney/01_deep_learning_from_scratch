@@ -15,7 +15,8 @@ class simpleNet:
 
     # 计算损失， 其中x是输入特征，t是正确解标签
     def loss(self, x, t):
-        z = self.predict(x) # x点乘权重，得到预测概率数组
-        y = softmax_no_overflow(z) # 通过softmax函数找出概率最大索引
+        z = self.predict(x) # x点乘权重，得到权重累加值
+        # Softmax函数是一种将任意实数向量转化为概率分布的归一化指数函数，其输出向量的每个元素都在0到1之间，且所有元素的和为1
+        y = softmax_no_overflow(z) #
         loss = cross_entropy_error(y, t) # 计算交叉熵损失函数（y是预测的索引，t是测试标签或正确解标签）
         return loss
