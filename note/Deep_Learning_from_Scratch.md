@@ -1482,7 +1482,13 @@ w_{21} & w_{22} & w_{23}
 \frac{\partial L}{\partial w_{21}} & \frac{\partial L}{\partial w_{22}} & \frac{\partial L}{\partial w_{23}} 
 \end{pmatrix} \tag{4.8}
 $$
+3）计算神经网络梯度代码：
 
+
+
+<br>
+
+---
 
 
 
