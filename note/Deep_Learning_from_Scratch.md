@@ -1404,16 +1404,84 @@ def gradient_descend(f, init_x, lr=0.01, step_num=100):
 
 【梯度法测试案例】
 
+```python
+import numpy as np
+import ch04_4_4_gradient_method_code as grad_method
+
+
+# 梯度法（或梯度下降法）测试案例
+def funcion_2(x):
+    return x[0] ** 2 + x[1] ** 2
+
+# 初始点(-3, 4)
+init_x = np.array([-3.0, 4.0])
+# 计算结果
+minimum_point = grad_method.gradient_descend(funcion_2, init_x, lr=0.1, step_num=100)
+print(minimum_point) # [-6.11110793e-10  8.14814391e-10]
+```
+
+【梯度法的更新过程】
 
 
 
+<br>
+
+---
+
+【关于学习率设定问题】
+
+```python
+import numpy as np
+import ch04_4_4_gradient_method_code as grad_method
+
+# 梯度法（或梯度下降法）测试案例
+def funcion_2(x):
+    return x[0] ** 2 + x[1] ** 2
+
+# 初始点(-3, 4)
+init_x = np.array([-3.0, 4.0])
+
+# 学习率过大的例子 lr=10.0
+minimum_point = grad_method.gradient_descend(funcion_2, init_x, lr=10.0, step_num=100)
+print(minimum_point) # [-2.58983747e+13 -1.29524862e+12]
+
+# 学习率过小的例子 lr=1e-10
+init_x = np.array([-3.0, 4.0])
+minimum_point_2 = grad_method.gradient_descend(funcion_2, init_x, lr=1e-10, step_num=100)
+print(minimum_point_2) # [-2.99999994  3.99999992]
+```
+
+上述实验结果表明，学习率为0.1学习到的函数最小值的点[-6.11110793e-10  8.14814391e-10]非常接近实际值(0,0)；
+
+- 学习率过大：如lr=10，则得到的最小值点会是一个非常大的值；
+- 学习率过小：如lr=1e-10，则得到的最小值点与初始点基本没有变化；
+
+【<font color=red>超参数</font>】
+
+- 超参数定义：超参数是人工设定的机器学习算法参数；（需要尝试多个值，以便找到一种可以使得学习顺利的参数）
 
 
+<br>
 
+---
 
+### 【4.4.2】神经网络的梯度 
 
+1）神经网络梯度定义：损失函数关于权重参数的梯度； 
 
+2）例：神经网络梯度的数学表示；
 
+神经网络W，损失函数L，则该神经网络梯度用$\frac{\partial L}{\partial W}$表示 
+$$
+W=\begin{pmatrix}
+w_{11} & w_{12} & w_{13} \\
+w_{21} & w_{22} & w_{23}
+\end{pmatrix} \\
+\frac{\partial L}{\partial W}=\begin{pmatrix}
+\frac{\partial L}{\partial w_{11}} & \frac{\partial L}{\partial w_{12}} & \frac{\partial L}{\partial w_{13}} \\ 
+\frac{\partial L}{\partial w_{21}} & \frac{\partial L}{\partial w_{22}} & \frac{\partial L}{\partial w_{23}} 
+\end{pmatrix} \tag{4.8}
+$$
 
 
 
