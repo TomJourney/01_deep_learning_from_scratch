@@ -1,6 +1,8 @@
 import ch04_4_4_2_neural_network_gradient as net_grad
 import numpy as np
-import ch04_4_4_gradient as grad
+from common.gradient import numerical_gradient
+
+print(np.random.randn(2, 3))
 
 # 测试案例：计算神经网络的梯度
 network = net_grad.simpleNet()
@@ -28,14 +30,17 @@ print(network.loss(x, t))
 # 1.1234180817699424
 
 
-##  计算梯度
+##  计算损失函数关于权值的梯度
 print("\n=== 权值, network.W = ")
 print(network.W)
-# [[ 1.52433042  1.36467856 -1.01818566]
-#  [ 0.19266843  0.26531208  0.94796842]]
+# [[-0.78391423 -0.0493546   1.01982955]
+#  [-0.1693144  -0.82591994 -0.70009164]]
 
-print("\n=== 计算梯度")
+print("\n=== 计算损失函数关于权值的梯度")
 def busi_func(W):
     return network.loss(x,t)
-dW = grad.numerical_gradient(busi_func, network.W)
+dW = numerical_gradient(busi_func, network.W)
 print(dW)
+# [[ 0.16255973  0.13988719 -0.30244691]
+#  [ 0.24383959  0.20983078 -0.45367037]]
+

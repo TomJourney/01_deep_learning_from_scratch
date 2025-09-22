@@ -1504,10 +1504,12 @@ class simpleNet:
 
     # 计算损失， 其中x是输入特征，t是正确解标签
     def loss(self, x, t):
-        z = self.predict(x) # x点乘权重，得到预测概率数组
-        y = softmax_no_overflow(z) # 通过softmax函数找出概率最大索引
-        loss = cross_entropy_error(y, t) # 计算交叉熵损失函数（y是预测的索引，t是测试标签或正确解标签）
+        z = self.predict(x) # x点乘权重，得到权重累加值
+        # Softmax函数是一种将任意实数向量转化为概率分布的归一化指数函数，其输出向量的每个元素都在0到1之间，且所有元素的和为1
+        y = softmax_no_overflow(z) #
+        loss = cross_entropy_error(y, t) # 计算交叉熵损失函数（y是预测概率，t是测试标签或正确解标签）
         return loss
+
 ```
 
 【计算神经网络梯度测试案例】ch04_4_4_2_neural_network_gradient_test.py
@@ -1515,6 +1517,7 @@ class simpleNet:
 ```python
 import ch04_4_4_2_neural_network_gradient as net_grad
 import numpy as np
+from common.gradient import numerical_gradient
 
 # 测试案例：计算神经网络的梯度
 network = net_grad.simpleNet()
@@ -1525,21 +1528,178 @@ print(network.W)
 #  [-0.65483815  1.71663151  0.79564619]]
 
 
-# 传入输入特征，通过神经网络做预测
+# 传入输入特征
 x = np.array([0.6, 0.9])
-# 通过神经网络计算预测概率
+# 计算输入特征x与神经网络权重w的加权和
 p = network.predict(x)
-print("\n=== 通过神经网络计算预测概率")
+print("\n=== 输入特征x与神经网络权重w的加权和：")
 print(p)
 # [-1.19626337  1.72289288  1.04533627]
-print("\n=== 计算概率最大值的索引")
+print("\n=== 计算加权和最大的索引")
 print(np.argmax(p))
 # 1
 
-print("\\n=== 计算损失函数")
-t = np.array([0, 0, 1])
+print("\\n=== 计算损失函数： 计算输入特征x的预测概率与测试标签的交叉熵损失函数")
+t = np.array([0, 0, 1]) # 正确解标签
 print(network.loss(x, t))
 # 1.1234180817699424
+
+
+##  计算损失函数关于权值的梯度
+print("\n=== 权值, network.W = ")
+print(network.W)
+# [[-0.78391423 -0.0493546   1.01982955]
+#  [-0.1693144  -0.82591994 -0.70009164]]
+
+print("\n=== 计算损失函数关于权值的梯度")
+def busi_func(W):
+    return network.loss(x,t)
+dW = numerical_gradient(busi_func, network.W)
+print(dW)
+# [[ 0.16255973  0.13988719 -0.30244691]
+#  [ 0.24383959  0.20983078 -0.45367037]]
+
+```
+
+【补充】上述代码的numerical_gradient是原书源代码中common包下的函数。[https://www.ituring.com.cn/book/1921](https://www.ituring.com.cn/book/1921)
+
+【gradient.py】
+
+```python
+# coding: utf-8
+import numpy as np
+
+def _numerical_gradient_1d(f, x):
+    h = 1e-4 # 0.0001
+    grad = np.zeros_like(x)
+    
+    for idx in range(x.size):
+        tmp_val = x[idx]
+        x[idx] = float(tmp_val) + h
+        fxh1 = f(x) # f(x+h)
+        
+        x[idx] = tmp_val - h 
+        fxh2 = f(x) # f(x-h)
+        grad[idx] = (fxh1 - fxh2) / (2*h)
+        
+        x[idx] = tmp_val # 还原值
+        
+    return grad
+
+
+def numerical_gradient_2d(f, X):
+    if X.ndim == 1:
+        return _numerical_gradient_1d(f, X)
+    else:
+        grad = np.zeros_like(X)
+        
+        for idx, x in enumerate(X):
+            grad[idx] = _numerical_gradient_1d(f, x)
+        
+        return grad
+
+
+def numerical_gradient(f, x):
+    h = 1e-4 # 0.0001
+    grad = np.zeros_like(x)
+    
+    it = np.nditer(x, flags=['multi_index'], op_flags=[['readwrite']])
+    while not it.finished:
+        idx = it.multi_index
+        tmp_val = x[idx]
+        x[idx] = float(tmp_val) + h
+        fxh1 = f(x) # f(x+h)
+        
+        x[idx] = tmp_val - h 
+        fxh2 = f(x) # f(x-h)
+        grad[idx] = (fxh1 - fxh2) / (2*h)
+        
+        x[idx] = tmp_val # 还原值
+        it.iternext()   
+        
+    return grad
+```
+
+<br>
+
+---
+
+## 【4.5】学习算法的实现
+
+学习定义：神经网络存在合适的权重和偏置，调整权重和偏置以便拟合训练数据的过程；
+
+1）神经网络的学习步骤：
+
+- 步骤1-选择mini-batch：从训练数据随机选择mini-batch（小批量数据）；
+- 步骤2-计算梯度：为减小mini-batch损失函数的值，需要计算各个权重参数的梯度；
+- 步骤3-更新参数：将权重参数沿着梯度方向进行微小更新；
+- 步骤4-重复：重复步骤1、步骤2、步骤3；
+
+2）随机梯度下降法定义：基于随机选择的mini-batch数据，使用梯度下降法更新参数的学习方法；
+
+- 简称：SGD， stochastic gradient descent 
+
+<br>
+
+---
+
+### 【4.5.1】2层神经网络的类
+
+1）两层神经网络类-TwoLayerNet 
+
+【TwoLayerNet】ch04_4_5_1_two_layer_net.py
+
+```python
+import numpy as np
+import common.neural_network_active_func as net_func
+import common.gradient as grad_func
+
+# 两层神经网络类
+class TwoLayerNet:
+    def __init__(self, input_size, hidden_size, output_size, weight_init_std=0.01):
+        # 初始化权重
+        self.params = {}
+        self.params['W1'] = weight_init_std * np.random.randn(input_size, hidden_size)
+        self.params['b1'] = np.zeros(hidden_size)
+        self.params['W2'] = weight_init_std * np.random.randn(hidden_size, output_size)
+        self.params['b2'] = np.zeros(output_size)
+
+    def predict(self, x):
+        W1, W2 = self.params['W1'], self.params['W2']
+        b1, b2 = self.params['b1'], self.params['b2']
+
+        a1 = np.dot(x, W1) + b1
+        z1 = net_func.sigmoid(a1)
+        a2 = np.dot(z1, W2) + b2
+        y = net_func.softmax_no_overflow(a2)
+
+        return y
+
+    # x:输入特征， t:标签
+    def loss(self, x, t):
+        y = self.predict(x)
+        return net_func.cross_entropy_error(y, t)
+
+    def accuracy(self, x, t):
+        y = self.predict(x)
+        y = np.argmax(y, axis=1) # 返回数组 y 沿着第1轴（axis=1）的最大值的索引（第1轴是列方向）
+        t = np.argmax(t, axis=1)
+
+        accuracy = np.sum(y == t) / float(x.shape[0])
+        return accuracy
+
+    # x:输入特征， t：标签
+    # 计算神经网络损失函数关于权值及偏置的梯度
+    def numerical_gradient(self, x, t):
+        loss_W = lambda W: self.loss(x, t)
+
+        grads = {}
+        grads['W1'] = grad_func.numerical_gradient(loss_W, self.params['W1'])
+        grads['b1'] = grad_func.numerical_gradient(loss_W, self.params['b1'])
+        grads['W2'] = grad_func.numerical_gradient(loss_W, self.params['W2'])
+        grads['b2'] = grad_func.numerical_gradient(loss_W, self.params['b2'])
+
+        return grads
 ```
 
 <br>
