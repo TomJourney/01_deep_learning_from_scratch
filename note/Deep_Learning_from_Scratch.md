@@ -1381,7 +1381,7 @@ x_1=x_1-\eta\frac{\partial f}{\partial x}
 $$
 其中 $\eta$表示更新量，在神经网络的学习中，称为学习率；
 
-- 学习率定义：指一次学习更新参数值的单位大小；如步长；
+- <font color=red>学习率定义</font>：指一次学习更新参数值的单位大小；如步长；
   - 学习率的确定：取0.01或0.001 ；
 - 梯度法公式表示一次更新的式子，这个步骤会反复执行；也就是说，每一步都按照上述公式更新变量的值，通过反复执行该步骤，逐渐减小函数值； 
 
@@ -1459,6 +1459,7 @@ print(minimum_point_2) # [-2.99999994  3.99999992]
 【<font color=red>超参数</font>】
 
 - 超参数定义：超参数是人工设定的机器学习算法参数；（需要尝试多个值，以便找到一种可以使得学习顺利的参数）
+- 学习率就是一种超参数；
 
 
 <br>
@@ -1482,6 +1483,10 @@ w_{21} & w_{22} & w_{23}
 \frac{\partial L}{\partial w_{21}} & \frac{\partial L}{\partial w_{22}} & \frac{\partial L}{\partial w_{23}} 
 \end{pmatrix} \tag{4.8}
 $$
+其中L损失函数使用交叉熵损失函数（N份数据的交叉熵损失函数，tij是正确解标签，yij是输出信号或输出值）：
+$$
+ E=-\frac{1}{N}\sum_{i}^{n}\sum_{j}^{m}t_{ij}\log{y_{ij}}
+$$
 3）计算神经网络梯度代码：
 
 【神经网络类】ch04_4_4_2_neural_network_gradient.py 
@@ -1498,14 +1503,14 @@ class simpleNet:
     def __init__(self):
         self.W = np.random.randn(2, 3) # 用高斯分布进行初始化
 
-    # 预测方法
+    # 预测方法（预测产生输出信号z，其中x是输出信号，W是权重）
     def predict(self, x):
         return np.dot(x, self.W)
 
     # 计算损失， 其中x是输入特征，t是正确解标签
     def loss(self, x, t):
         z = self.predict(x) # x点乘权重，得到权重累加值
-        # Softmax函数是一种将任意实数向量转化为概率分布的归一化指数函数，其输出向量的每个元素都在0到1之间，且所有元素的和为1
+        # Softmax函数(激活函数)是一种将任意实数向量转化为概率分布的归一化指数函数，其输出向量的每个元素都在0到1之间，且所有元素的和为1
         y = softmax_no_overflow(z) #
         loss = cross_entropy_error(y, t) # 计算交叉熵损失函数（y是预测概率，t是测试标签或正确解标签）
         return loss
@@ -1530,7 +1535,7 @@ print(network.W)
 
 # 传入输入特征
 x = np.array([0.6, 0.9])
-# 计算输入特征x与神经网络权重w的加权和
+# 计算输入特征x与神经网络权重w的加权和（输出信号）
 p = network.predict(x)
 print("\n=== 输入特征x与神经网络权重w的加权和：")
 print(p)
@@ -1668,10 +1673,10 @@ class TwoLayerNet:
         W1, W2 = self.params['W1'], self.params['W2']
         b1, b2 = self.params['b1'], self.params['b2']
 
-        a1 = np.dot(x, W1) + b1
-        z1 = net_func.sigmoid(a1)
+        a1 = np.dot(x, W1) + b1 # 加权和  
+        z1 = net_func.sigmoid(a1)  # 激活函数作用后的输出信号 
         a2 = np.dot(z1, W2) + b2
-        y = net_func.softmax_no_overflow(a2)
+        y = net_func.softmax_no_overflow(a2) # 激活函数作用后的输出信号 
 
         return y
 
