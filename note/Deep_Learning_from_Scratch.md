@@ -2051,11 +2051,74 @@ $$
 
 ### 【5.4.1】乘法层的实现 
 
+1）层的实现有2个通用的方法，包括forward()-正向传播， backward()-反向传播； 
 
+【计算图的乘法层类】ch05_5_4_1_multiply_layer_p135
 
+```python
+# 计算图的乘法层类
+class MulLayer():
+    def __init__(self):
+        self.x = None
+        self.y = None
 
+    # 正向传播， x与y都是输入信号
+    def forward(self, x, y):
+        self.x = x
+        self.y = y
+        out = x * y
+        return out
 
+    # 反向传播， dout是上游导数（从右到左）
+    # backward()把从上游传来的导数dout乘以正向传播的翻转值，然后传给下游
+    def backward(self, dout):
+        dx = dout * self.y
+        dy = dout * self.x
+        return dx, dy
+```
 
+【计算图的乘法层类-测试案例】ch05_5_4_1_multiply_layer_test_p136
+
+```python
+import ch05_5_4_1_multiply_layer_p135 as multiply_layer
+
+# 计算图的乘法层类-测试用例
+apple_price = 100
+apple_num = 2
+tax = 1.1
+
+# layer
+multi_apple_layer = multiply_layer.MulLayer()
+multi_tax_layer = multiply_layer.MulLayer()
+
+# 前向传播
+apple_price = multi_apple_layer.forward(apple_price, apple_num)
+# 把苹果总金额与税额向前传播，得到总金额
+price = multi_tax_layer.forward(apple_price, tax)
+
+# 打印正向传播计算的支付的总金额
+print("\n\n===打印正向传播计算的支付的总金额")
+print(price) # 220.00000000000003
+
+# 后向传播： 计算各个变量的导数
+dprice = 1
+dapple_price, dtax = multi_apple_layer.backward(dprice)
+dapple, dapple_num = multi_apple_layer.backward(dapple_price)
+
+# 打印通过后向传播计算得到的各变量的导数
+print("\n=== 打印通过后向传播计算得到的各变量的导数")
+print(dapple, dapple_num, dtax) # 4 200 100
+```
+
+<br>
+
+---
+
+### 【5.4.2】加法层的实现 
+
+【计算图的加法层类】
+
+【计算图的加法层类-测试案例】
 
 
 
