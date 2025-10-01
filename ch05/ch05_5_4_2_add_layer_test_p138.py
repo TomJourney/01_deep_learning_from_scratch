@@ -22,6 +22,6 @@ taxed_price = mul_tax_layer_ins.forward(all_price, tax)
 
 # backward 后向传播
 dprice = 1
-
+dall_price = add_apple_layer_ins.forward(dprice, dall_price)
 
 
