@@ -2197,7 +2197,133 @@ print(f"后向传播：橘子单价偏导={dorange_price}, 橘子数量偏导={d
 
 ![](./ch05_p138.png)
 
+<br>
 
+---
+
+## 【5.5】激活函数层的实现
+
+### 【5.5.1】激活函数ReLU的神经网络层
+
+1）激活函数ReLU表示如下：
+$$
+y=\begin{cases}
+x& (x>0) \\
+0& (x<=0)
+\end{cases} \tag{5.7}
+$$
+
+
+2）激活函数ReLU求解关于x的导数：
+$$
+\frac{\partial y}{\partial x}=\begin{cases}1& (x>0) \\ 0& (x<=0)\end{cases} \tag{5.8}
+$$
+【公式解说】在公式5.8中，如果正向传播的输入x大于0，则反向传播会将上游的值原封不动地传给下游；
+
+- 反过来： 如果正向传播的x小于等于0，则反向传播中传给下游的信号将停在此处；如图5-18所示。
+
+3）ReLU的正向传播与反向传播，如下图所示。
+
+![](./ch05_p140.png)
+
+4）激活函数ReLU类代码：
+
+```python
+class Relu:
+    def init(self):
+        self.mask = None
+
+    def forward(self, x):
+        self.mask = (x <= 0)
+        out = x.copy()
+        out[self.mask] = 0
+
+        return out
+
+    def backward(self, dout):
+        dout[self.mask] = 0
+        dx = dout
+        return dx
+```
+
+5）relu中有mask实例变量：mask=(x<=0)的作用是x二维数组中元素小于等于0，则设置为true，否则设置为false；
+
+```python
+import numpy as np
+
+x = np.array([[1.0, -0.5], [-2.0, 3.0]])
+print(x)
+# [[ 1.  -0.5]
+#  [-2.   3. ]]
+
+# x二维数组中元素小于等于0，则设置为true，否则设置为false
+mask = (x<=0)
+print(mask)
+# [[False  True]
+#  [ True False]]
+```
+
+<br>
+
+---
+
+### 【5.5.2】激活函数Sigmoid的神经网络层
+
+1）激活函数Sigmoid表示如下： 
+$$
+y=\frac{1}{1+exp(-x)} \tag{5.9}
+$$
+
+
+2）公式5.9用计算图正向传播表示如下：
+
+![](./ch05_p141.png)
+
+3）由公式5.9，推导出激活函数sigmoid的计算图反向传播，如下：
+
+![](./ch05_p143.png)
+
+4）总结：图5-20演示了激活函数Sigmoid层的反向传播，省去中间步骤后，可以简洁表示如下。
+
+![](./ch05_p143_sigmoid_concise.png)
+
+其中 $\frac{\partial{L}}{partial{y}}y^2exp(-x)$ 整理如下：
+$$
+\begin{aligned} \frac{\partial{L}}{\partial{y}}y^2exp(-x)&=\frac{\partial{L}}{\partial{y}}\frac{1}{(1+exp(-x))^2}exp(-x)\\
+&=\frac{\partial{L}}{\partial{y}}\frac{1}{1+exp(-x)}\frac{exp(-x)}{1+exp(-x)} \\
+&=\frac{\partial{L}}{\partial{y}}y(1-y)
+\end{aligned} \tag{5.12}
+$$
+5）所以：图5-21表示的sigmoid层的反向传播，只根据正向传播的输出就能够计算出来，如下。
+
+![](./ch05_p144.png)
+
+6）激活函数sigmoid层的代码实现：
+
+```python
+import numpy as np
+
+# 激活函数sigmoid层的代码实现
+class Sigmoid():
+    def __init__(self):
+        self.out = None
+
+    def forward(self, x):
+        out = 1 / (1+np.exp(-x))
+        self.out = out
+
+        return out
+
+    def backward(self, dout):
+        dx = dout * (1.0-self.out)  * self.out
+        return dx
+```
+
+<br>
+
+---
+
+## 【5.6】Affine/Softmax层的实现（激活函数Affine或Softmax的神经网络层实现）
 
 
 
