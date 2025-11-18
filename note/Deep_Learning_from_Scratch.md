@@ -532,12 +532,12 @@ def forward(network, x):
     W1, W2, W3 = network['W1'], network['W2'], network['W3']
     b1, b2, b3 = network['b1'], network['b2'], network['b3']
 
-    a1 = np.dot(x, W1) + b1
-    z1 = sigmoid(a1)
+    a1 = np.dot(x, W1) + b1 # 第1层输入信号总和
+    z1 = sigmoid(a1) # sigmoid激活函数：把输入信号总和转换为输出信号。 
     a2 = np.dot(z1, W2) + b2
     z2 = sigmoid(a2)
     a3 = np.dot(z2, W3) + b3
-    y = identity_func(a3)
+    y = identity_func(a3) # 同理，identity也是激活函数。
 
     return y
 
@@ -558,11 +558,38 @@ print(y) #[0.31682708 0.69627909]
 
 ![image-20250913214342117](./ch03_p62_1copy.png)
 
+#### 【3.4.4.1】使用矩阵乘法表示
+
+1）可以将第1层的加权和表示为下面的式子：
+$$
+A^{(1)}=XW^{(1)}+B^{(1)}
+$$
+其中，$A^{(1)},X, B^{(1)}, W^{(1)}表示如下。$
+$$
+A^{(1)}=\begin{bmatrix}a^{(1)}_{1} &a^{(1)}_{2} &a^{(1)}_{3}\end{bmatrix}
+$$
+
+$$
+X=\begin{bmatrix}x_1 & x_2\end{bmatrix}
+$$
+
+$$
+B^{(1)}=\begin{bmatrix} b^{(1)}_1 & b^{(1)}_2 & b^{(1)}_3 \end{bmatrix}
+$$
+
+$$
+W^{(1)}=\begin{bmatrix} w^{(1)}_{11} & w^{(1)}_{21} & w^{(1)}_{31} \\ w^{(1)}_{12} & w^{(1)}_{22} & w^{(1)}_{32} \end{bmatrix}
+$$
+
+
+
 <br>
 
 ---
 
 ### 【3.4.4】三层神经网络结构 
+
+
 
 ![image-20250913214539513](./ch03_p62_1copyb.png)
 
