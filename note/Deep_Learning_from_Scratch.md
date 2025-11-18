@@ -424,7 +424,7 @@ plt.show()
 
 ```
 
-![image-20250907220402132](./ch03_p45.png)
+<img src="./ch03_p45.png" width="50%^"/>
 
 <br>
 
