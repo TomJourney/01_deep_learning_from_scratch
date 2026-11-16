@@ -16,8 +16,10 @@ network = infer_func.init_network()  # 初始化神经网络(读入保存在pick
 
 accuracy_cnt = 0  # 识别准确的个数
 for i in range(len(x)):  # 遍历测试图像x
+    print("========== x[i].shape = ",x[i].shape)
     # 预测分类
     y = infer_func.predict(network, x[i])  # 预测得到预测值
+    print("y = ", y)
     p = np.argmax(y)  # 获取y的数组中最大值的索引
     if p == t[i]:
         accuracy_cnt += 1

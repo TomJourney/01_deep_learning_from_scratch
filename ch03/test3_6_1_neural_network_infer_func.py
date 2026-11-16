@@ -29,5 +29,16 @@ def predict(network, x):
     a3 = np.dot(z2, W3) + b3
     y = softmax_no_overflow(a3)
 
+    # 打印形状
+    print("W1.shape = ", W1.shape)
+    print("a1.shape = ", a1.shape)
+    print("z1.shape = ", z1.shape)
+
+    print("a2.shape = ", a2.shape)
+    print("z2.shape = ", z2.shape)
+
+    print("a3.shape = ", a3.shape)
+    print("y.shape = ", y.shape)
+
     return y
 

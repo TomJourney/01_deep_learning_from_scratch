@@ -16,6 +16,7 @@ print(t.shape) # (10000,)
 
 # 基于批处理的推理
 for i in range(0, len(x), batch_size):
+    print("\n========== 批次号=", i)
     x_batch = x[i:i + batch_size] # 取出分批数据，每批一个单位
     print(x_batch.shape) # (2000, 784)
     y_batch = infer_func.predict(network, x_batch) # 以批为单位执行预测分类，得到概率数组
