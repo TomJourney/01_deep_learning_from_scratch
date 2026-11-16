@@ -18,6 +18,10 @@ img = x_train[0]
 lable = t_train[0]
 print(lable)  # 5
 
+print("==========")
+print("img = ", img)
+print("lable = ", lable)
+
 print(img.shape)  # (784,)
 img = img.reshape(28, 28)  # 读入的图像是一维的，显示时，需要把图像的形状变为原来的尺寸(28 * 28 )
 print(img.shape)  # (28, 28)
