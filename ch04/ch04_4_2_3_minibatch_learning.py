@@ -26,6 +26,6 @@ print(batch_mask) # [48518 20742 15521 28731 49193 47555 22867 15607 56529 53532
 print("\n=== 选择的小批量数据如下：")
 x_batch = x_train[batch_mask]
 t_batch = t_train[batch_mask]
-print(x_batch)
-print(t_batch)
+print(x_batch.shape) # (10, 784)
+print(t_batch.shape) # (10, 10)
 
