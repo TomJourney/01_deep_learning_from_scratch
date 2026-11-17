@@ -12,4 +12,4 @@ print(loss_func.non_one_hot_mini_batch_cross_entropy_error(np.array(y1), np.arra
 # 例2： 索引为7的概率最高 0.6
 print("\n=== one-hot标签的交叉熵损失函数")
 y2 = [0.1, 0.05, 0.1, 0.0, 0.05, 0.1, 0.0, 0.6, 0.0, 0.0]
-print(loss_func.one_hot_mini_batch_cross_entropy_error(np.array(y1), np.array(t))) # 0.510825457099338
+print(loss_func.one_hot_mini_batch_cross_entropy_error(np.array(y2), np.array(t))) # 0.510825457099338

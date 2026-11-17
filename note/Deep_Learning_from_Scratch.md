@@ -1438,6 +1438,17 @@ def non_one_hot_mini_batch_cross_entropy_error(y, t):
     return -np.sum(t * np.log(y[np.arange(batch_size), t] + 1e-7)) / batch_size
 ```
 
+【补充】 np.arange(batch_size) 生成一个从0到 (batsh_size - 1) 的数组 
+
+```python
+import numpy as np
+
+# np.arange
+batch_size = 5
+print("np.arrange(batch_size) = ", np.arange(batch_size))
+# np.arrange(batch_size) =  [0 1 2 3 4]
+```
+
 <br>
 
 ---
