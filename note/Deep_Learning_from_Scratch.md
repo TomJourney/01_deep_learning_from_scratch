@@ -1556,9 +1556,9 @@ print(numerical_diff_v2(function_1, 10))  # 0.2999999999986347
 
 ### 【4.3.3】偏导数 
 
-1）偏导数定义：指对多变量的函数（多元函数）其中一个变量求导，而其他变量保持不变的计算过程。求函数f对变量x的偏导的数学式为 $\frac{\partial f}{\partial x}$
+1）<font color=red>偏导数定义：指对多变量的函数（多元函数）其中一个变量求导，而其他变量保持不变的计算过程</font>。求函数f对变量x的偏导的数学式为 $\frac{\partial f}{\partial x}$
 
-- 导数定义：这个函数在这一点附近的变化率（即函数在这一点的切线斜率）。
+- <font color=red>导数定义：这个函数在这一点附近的变化率（即函数在这一点的切线斜率） </font>。
 
 2）例子： $f(x_0,x_1)=x_0^{2}+x_1^{2}$
 
@@ -1633,6 +1633,19 @@ def func_2(x1):
 print(devivativeV2.numerical_diff_v2(func_2, 4.0)) # 7.999999999999119
 ```
 
+【补充-数值微分-计算偏导数代码】
+
+```python
+# 基于中心差分的数值梯度(数值微分函数)
+def numerical_diff_v2(f, x):
+    h = 1e-4  # 0.0001
+    return (f(x + h) - f(x - h)) / (2 * h)
+
+# 测试案例
+def function_1(x):
+    return 0.01 * x ** 2 + 0.1 * x
+```
+
 <br>
 
 ---
@@ -1643,9 +1656,7 @@ print(devivativeV2.numerical_diff_v2(func_2, 4.0)) # 7.999999999999119
 
 - <font color=red>梯度其他定义：表示各点处的函数值减小最多方向汇总后的向量</font>； 
 
-2）数值梯度函数：
-
-【ch04_4_4_gradient.py】
+#### 【数值梯度函数代码（重要）-ch04_4_4_gradient.py】
 
 ```python
 import numpy as np
@@ -1688,7 +1699,7 @@ print(grad.numerical_gradient(src_func2.func2, np.array([0, 2.0])))
 print(grad.numerical_gradient(src_func2.func2, np.array([3.0, 0.0])))
 # [6. 8.]
 # [0. 4.]
-# [6. 0.]
+# [6. 0.] 
 ```
 
 <br>
@@ -1697,14 +1708,14 @@ print(grad.numerical_gradient(src_func2.func2, np.array([3.0, 0.0])))
 
 ### 【4.4.1】梯度法 
 
-1）梯度法定义： 使用梯度来寻找损失函数最小值时的参数的方法；
+1）<font color=red>梯度法定义： 使用梯度来寻找损失函数最小值时的参数的方法</font>；
 
 - 补充：机器学习的主要任务是在学习时寻找最优参数，其中最优参数是损失函数取最小值的参数；
 
 2）需要注意的是：<font color=red>梯度表示各点处的函数值减小最多的方向。因此无法保证梯度所指的方向就是函数的最小值方向</font>。如梯度方向指向局部最小值<font color=red>(极值)</font>方向，而不是全局最小值方向，而函数最小值指全局最小值）
 
 - 补充：函数的极小值，最小值，以及被称为鞍点的地方，梯度为0 ； 
-- 鞍点定义：从某个方向看是极大值，另一个方向看是极小值的点；
+- <font color=red>鞍点定义：从某个方向看是极大值，另一个方向看是极小值的点</font>；
 
 3）梯度法另一种定义：通过不断沿梯度方向前进，逐渐减小函数值（如损失函数）的方法；
 
@@ -1724,7 +1735,7 @@ $$
   - 学习率的确定：取0.01或0.001 ；
 - 梯度法公式表示一次更新的式子，这个步骤会反复执行；也就是说，每一步都按照上述公式更新变量的值，通过反复执行该步骤，逐渐减小函数值； 
 
-【梯度法代码实现】ch04_4_4_gradient_method_code.py
+#### 【梯度法代码实现】ch04_4_4_gradient_method_code.py
 
 ```python
 import ch04_4_4_gradient as grad
@@ -1759,15 +1770,21 @@ minimum_point = grad_method.gradient_descend(funcion_2, init_x, lr=0.1, step_num
 print(minimum_point) # [-6.11110793e-10  8.14814391e-10]
 ```
 
+【代码解说】
+
+- 设初始值为 (-3, -4)， 开始使用梯度法寻找最小值， 最终的结果是 (-6.1e-10, 8.1e-10)， 非常接近（0,0）； 
+
 【梯度法的更新过程】
 
+- $f(x_0, x_1)=x_0^{2}+x_1^{2}$ 的梯度法更新过程： 虚线是函数的等高线；
 
+![image-20261118071148071](../img/p10501.png)
 
 <br>
 
 ---
 
-【关于学习率设定问题】
+#### 【关于学习率设定问题】
 
 ```python
 import numpy as np
@@ -1807,11 +1824,11 @@ print(minimum_point_2) # [-2.99999994  3.99999992]
 
 ### 【4.4.2】神经网络的梯度 
 
-1）神经网络梯度定义：损失函数关于权重参数的梯度； 
+1）<font color=red>神经网络梯度定义：损失函数关于权重参数的梯度</font>； 
 
 2）例：神经网络梯度的数学表示；
 
-神经网络W，损失函数L，则该神经网络梯度用$\frac{\partial L}{\partial W}$表示 
+神经网络W（权重或偏置参数的矩阵），损失函数L，则该神经网络梯度用$\frac{\partial L}{\partial W}$表示 ； 
 $$
 W=\begin{pmatrix}
 w_{11} & w_{12} & w_{13} \\
@@ -1822,7 +1839,7 @@ w_{21} & w_{22} & w_{23}
 \frac{\partial L}{\partial w_{21}} & \frac{\partial L}{\partial w_{22}} & \frac{\partial L}{\partial w_{23}} 
 \end{pmatrix} \tag{4.8}
 $$
-其中L损失函数使用交叉熵损失函数（N份数据的交叉熵损失函数，tij是正确解标签，yij是输出信号或输出值）：
+其中L损失函数使用交叉熵损失函数（N份数据的交叉熵损失函数，$t_{ij}$是正确解标签，$y_{ij}$ 是输出信号或输出值）：
 $$
  E=-\frac{1}{N}\sum_{i}^{n}\sum_{j}^{m}t_{ij}\log{y_{ij}}
 $$
