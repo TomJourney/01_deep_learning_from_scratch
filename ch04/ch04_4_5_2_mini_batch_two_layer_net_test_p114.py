@@ -3,6 +3,7 @@ import ch04_4_5_1_two_layer_net_p111 as two_layer_network
 from dataset import mnist
 from dataset.mnist import load_mnist
 import common.time_utils as time_utils
+import matplotlib.pyplot as plt
 
 # 加载minist数据集
 (x_train, t_train), (x_test, t_test) = load_mnist(normalize=True, flatten=True, one_hot_label=True)
@@ -10,7 +11,7 @@ import common.time_utils as time_utils
 train_loss_list = []
 
 # 超参数
-iters_num = 10 # 迭代次数应该设置为10000，设置为10仅本地演示
+iters_num = 50 # 迭代次数应该设置为10000，设置为10仅本地演示
 train_size = x_train.shape[0] # 训练集数据量
 batch_size = 100  # mini-batch的大小（每批数据量）
 learning_rate = 0.1 # 学习率
@@ -35,9 +36,30 @@ for i in range(iters_num):
 
     # 记录学习过程
     loss = network.loss(x_batch, t_batch)
-    train_loss_list.append(loss)
+    train_loss_list.append((i,loss))
     print(f"{time_utils.get_now_year_month_day_hour_minite_second()} 第{i}次训练结束")
 
 # 打印每次训练的损失
 print("\n=== 打印每次训练的损失")
 print(train_loss_list)
+
+# 画图
+# 1. 拆分横纵坐标
+indices = [item[0] for item in train_loss_list]
+losses  = [item[1] for item in train_loss_list]
+
+# 2. 中文显示设置（Windows 用 SimHei；Mac 可换成 'Arial Unicode MS'）
+plt.rcParams['font.sans-serif'] = ['SimHei']
+plt.rcParams['axes.unicode_minus'] = False
+
+# 3. 绘图
+plt.figure(figsize=(10, 5))
+plt.plot(indices, losses, color='#1f77b4', linewidth=1.5,
+         marker='o', markersize=3)          # 点很多时可去掉 marker
+
+plt.xlabel('Step (index)')
+plt.ylabel('Loss')
+plt.title('Training Loss Curve')
+plt.grid(True, linestyle='--', alpha=0.5)
+plt.tight_layout()
+plt.show()

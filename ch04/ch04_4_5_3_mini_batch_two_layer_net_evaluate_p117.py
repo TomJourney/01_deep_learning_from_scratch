@@ -45,7 +45,7 @@ for i in range(iters_num):
     train_loss_list.append(loss)
     print(f"{time_utils.get_now_year_month_day_hour_minite_second()} 第{i}次训练结束")
 
-    # 计算每个epoch的识别精度
+    # 计算每个epoch的识别精度（每100次训练，就是一个epoch）
     if i % iter_per_epoch == 0:
         train_acc = network.accuracy(x_train, t_train)
         test_acc = network.accuracy(x_test, t_test)

@@ -1845,7 +1845,7 @@ $$
 $$
 3）计算神经网络梯度代码：
 
-【神经网络类】ch04_4_4_2_neural_network_gradient.py 
+#### 【神经网络类】ch04_4_4_2_neural_network_gradient.py 
 
 ```python
 import sys, os
@@ -1873,7 +1873,7 @@ class simpleNet:
 
 ```
 
-【计算神经网络梯度测试案例】ch04_4_4_2_neural_network_gradient_test.py
+#### 【计算神经网络梯度测试案例】ch04_4_4_2_neural_network_gradient_test.py
 
 ```python
 import ch04_4_4_2_neural_network_gradient as net_grad
@@ -1987,16 +1987,16 @@ def numerical_gradient(f, x):
 
 ## 【4.5】学习算法的实现
 
-学习定义：神经网络存在合适的权重和偏置，调整权重和偏置以便拟合训练数据的过程；
+<font color=red>学习定义</font>：神经网络存在合适的权重和偏置，调整权重和偏置以便拟合训练数据的过程；
 
-1）神经网络的学习步骤：
+神经网络的学习步骤：
 
 - 步骤1-选择mini-batch：从训练数据随机选择mini-batch（小批量数据）；
 - 步骤2-计算梯度：为减小mini-batch损失函数的值，需要计算各个权重参数的梯度；
 - 步骤3-更新参数：将权重参数沿着梯度方向进行微小更新；
 - 步骤4-重复：重复步骤1、步骤2、步骤3；
 
-2）随机梯度下降法定义：基于随机选择的mini-batch数据，使用梯度下降法更新参数的学习方法；
+随机梯度下降法定义：基于随机选择的mini-batch数据，使用梯度下降法更新参数的学习方法；
 
 - 简称：SGD， stochastic gradient descent 
 
@@ -2032,15 +2032,16 @@ class TwoLayerNet:
         a1 = np.dot(x, W1) + b1 # 加权和  
         z1 = net_func.sigmoid(a1)  # 激活函数作用后的输出信号 
         a2 = np.dot(z1, W2) + b2
-        y = net_func.softmax_no_overflow(a2) # 激活函数作用后的输出信号 
+        y = net_func.softmax_no_overflow(a2) # 概率分布 
 
         return y
 
-    # x:输入特征， t:标签
+    # 计算损失： x:输入特征， t:标签
     def loss(self, x, t):
         y = self.predict(x)
         return net_func.cross_entropy_error(y, t)
-
+	
+  	# 统计准确率 
     def accuracy(self, x, t):
         y = self.predict(x)
         y = np.argmax(y, axis=1) # 返回数组 y 沿着第1轴（axis=1）的最大值的索引（第1轴是列方向）
@@ -2067,11 +2068,11 @@ class TwoLayerNet:
 
 - 因为输入数据是手写数字，图像大小是784（28 * 28），输出为10个类别，所以指定参数 input_size=784, output_size=10,把隐藏层神经元个数设置为一个合适值即可；
 - 初始化方法\__init__ 会初始化权重参数； 
-- 需要注意的是：权重参数使用符合高斯分布的随机数进行初始化，偏置使用0初始化； 
+- <font color=red>需要注意的是：权重参数使用符合高斯分布的随机数进行初始化，偏置使用0初始化</font> ； 
 
 【补充】
 
-- 误差反向传播法：一种告诉计算梯度的方法，是对 numeric_gradient()方法进行加速；
+- <font color=red>误差反向传播法</font>：一种高速计算梯度的方法，是对 numeric_gradient()方法进行加速；
 
 <br>
 
@@ -2079,11 +2080,11 @@ class TwoLayerNet:
 
 ### 【4.5.2】mini-batch的实现
 
-1）mini-batch学习定义：从训练数据中随机选择一部分数据（称为mini-batch，小批量），再以mini-batch为对象，使用梯度法更新参数的过程；
+<font color=red>mini-batch学习定义：</font>从训练数据中随机选择一部分数据（称为mini-batch，小批量样本），再以mini-batch为对象，使用梯度法更新参数（权重与偏置）的过程；
 
 2）案例：以 TwoLayerNet类为对象，使用mnist数据集进行学习；
 
-【ch04_4_5_2_mini_batch_two_layer_net_test_p114】 基于mini-batch的两层神经网络测试
+#### 【ch04_4_5_2_mini_batch_two_layer_net_test_p114】 基于mini-batch的两层神经网络测试
 
 ```python
 import numpy as np
@@ -2092,7 +2093,7 @@ from dataset import mnist
 from dataset.mnist import load_mnist
 import common.time_utils as time_utils
 
-# 加载minist数据集
+# 加载minist数据集： 训练数据，训练标签；测试数据，测试标签； 
 (x_train, t_train), (x_test, t_test) = load_mnist(normalize=True, flatten=True, one_hot_label=True)
 # 训练损失列表
 train_loss_list = []
@@ -2110,8 +2111,8 @@ for i in range(iters_num):
     print(f"{time_utils.get_now_year_month_day_hour_minite_second()} 第{i}次训练开始")
     # 获取mini-batch
     batch_mask = np.random.choice(train_size, batch_size) # 获取mini-batch小批量
-    x_batch = x_train[batch_mask] # mini-batch的训练集
-    t_batch = t_train[batch_mask] # mini-batch的测试集
+    x_batch = x_train[batch_mask] # mini-batch的训练数据集
+    t_batch = t_train[batch_mask] # mini-batch的测试数据集
 
     # 计算梯度
     grad = network.numerical_gradient(x_batch, t_batch)
@@ -2141,9 +2142,15 @@ print(train_loss_list)
 
 2）神经网络学习，需要确认是否发生过拟合；
 
-- 过拟合定义：机器学习模型在训练集上表现极好，但对新数据或测试集表现差的现象；
+- <font color=red>过拟合定义</font>：机器学习模型在训练集上表现极好，但对新数据或测试集表现差的现象；
 
-【基于测试数据评价两层神经网络机器学习算法性能】
+<font color=red>epoch定义</font>:  表示学习中所有训练数据均被使用过一次时的更新次数；
+
+- 如，对于10000笔训练数据， 用大小为100笔数据的mini-batch学习时， 重复随机梯度下降法100次， 所有的训练数据就都被看过了，此时，100次就是一个 epoch；
+
+【代码117-ch04_4_5_3_mini_batch_two_layer_net_evaluate_p117.py】
+
+基于测试数据评价两层神经网络机器学习算法性能
 
 ```python
 import numpy as np
@@ -2193,7 +2200,7 @@ for i in range(iters_num):
     train_loss_list.append(loss)
     print(f"{time_utils.get_now_year_month_day_hour_minite_second()} 第{i}次训练结束")
     
-    # 计算每个epoch的识别精度 
+    # 计算每个epoch的识别精度（每100次训练，就是一个epoch） 
     if i % iter_per_epoch == 0:
         train_acc = network.accuracy(x_train, t_train)
         test_acc = network.accuracy(x_test, t_test)
