@@ -6,10 +6,10 @@ rule = Relu()
 
 print("\n========== 前向传播： ")
 x1 = numpy.array([-1, 0, 1, 2,3,4,5])
-print(rule.forward(x1))
+print(rule.forward(x1)) # [0 0 1 2 3 4 5]
 
 print("\n========== 反向传播： ")
-print(rule.backward(x1))
+print(rule.backward(x1)) # [0 0 1 2 3 4 5]
 
 print("\n========== mask： ")
-print(rule.get_mask())
+print(rule.get_mask()) # [ True  True False False False False False]
