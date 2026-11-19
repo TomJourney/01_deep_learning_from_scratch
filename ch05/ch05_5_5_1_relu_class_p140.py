@@ -13,3 +13,6 @@ class Relu:
         dout[self.mask] = 0
         dx = dout
         return dx
+
+    def get_mask(self):
+        return self.mask
