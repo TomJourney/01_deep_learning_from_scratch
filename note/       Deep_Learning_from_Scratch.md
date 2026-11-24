@@ -2984,9 +2984,62 @@ $$
 - 损失函数关于 $W$ 的梯度记为 $\frac{\partial{L}}{\partial{W}}$
 - $\eta$ 表示学习率， 实际上会取 0.01 或 0.001 这些事先决定好的值； 
 
-#### 【SGD代码实现】
+#### 【SGD代码实现-ch06_6_1_2_sgd.py】
 
+```python
+# sgd-随机梯度下降法 实现
 
+class SGD:
+    def __init__(self, lr=0.01):
+        self.lr = lr
+
+    # params: 权重； grads：梯度
+    def update(self, params, grads):
+        for key in params.keys():
+            params[key] -= self.lr * grads[key]
+```
+
+<br>
+
+---
+
+### 【6.1.3】SGD缺点
+
+SGD缺点： 如果函数的形状非均向，比如呈延伸状，搜索路径会非常低效；<font color=red>即SGD低效的根本原因是</font>， 梯度的方向并没有指向最小值的方向；
+
+下面将介绍 Momentum， AdaGrad， Adam 这3种方法来替代 SGD
+
+<br>
+
+### 【6.1.4】Momentum（动量）
+
+Momentum是动量的意思，与物理有关，数学表达式如下：
+$$
+v \leftarrow \alpha v - \eta\frac{\partial{L}}{\partial{W}} \tag{6.3}
+$$
+
+$$
+W \leftarrow W +  v  \tag{6.4}
+$$
+
+等价于 ：
+$$
+W \leftarrow W +  \alpha v - \eta\frac{\partial{L}}{\partial{W}} \tag{6.4}
+$$
+
+### 【6.1.5】AdaGrad-学习率衰减
+
+<font color=red>AdaGrad定义：</font> 一种基于梯度的优化算法，其核心是为模型的每一个参数独立地、动态地调整学习率。它由 Duchi 等人在 2011 年提出，旨在解决标准梯度下降法使用统一学习率时，对不同频率特征适应能力差的问题。（其中 Ada 指的是 Adaptive，适当的）
+
+- 在有关学习率的有效技巧中，有一种被称为 <font color=red>学习率衰减</font>的方法； 即随着学习的进行，使学习率逐渐减小； 
+
+$$
+h \leftarrow \alpha h + \frac{\partial{L}}{\partial{W}} \odot \frac{\partial{L}}{\partial{W}} \tag{6.5}
+$$
+
+$$
+W \leftarrow W - \eta\frac{1}{\sqrt{h}}\frac{\partial{L}}{\partial{W}} \tag{6.6}
+$$
 
 
 
