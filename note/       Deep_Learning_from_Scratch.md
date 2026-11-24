@@ -2905,6 +2905,117 @@ Softmax-with-Loss层的计算图如图5-29所示。
 
 #### Softmax-with-Loss层的代码实现 
 
+【ch05_5_6_3_softmax_with_loss.py】
+
+```python
+# Softmax-with-Loss层的代码实现
+
+from common.neural_network_active_func import sigmoid, softmax_no_overflow
+from ch04.ch04_4_2_2_cross_entropy_error import cross_entropy_error
+
+class SoftmaxWithLoss:
+    def __init__(self):
+        self.loss = None # 损失
+        self.y = None # softmax输出
+        self.t = None # 监督数据 (ont-hot vector)
+
+    def forward(self, x, t):
+        self.t = t
+        self.y = softmax_no_overflow(x)
+        self.loss = cross_entropy_error(self.y, self.t)
+
+        return self.loss
+
+    def backward(self, dout=1):
+        batch_size = self.t.shape[0]
+        dx = (self.y - self.t) / batch_size
+
+        return dx
+```
+
+【注意】反向传播时， 将要传播的值除以批的大小(batch_size) 后，传递给前面的层的是单个数据的误差；
+
+<br>
+
+## 【5.7】误差反向传播法的代码实现
+
+相比于数值微分计算梯度， 误差反向传播法可以快速高效计算梯度；
+
+### 【5.7.1】神经网络学习的全貌图
+
+神经网络学习的步骤：
+
+- 步骤1-选择小批量mini-batch： 从训练数据中随机选择一部分数据； 
+- 步骤2-计算梯度： 计算损失函数关于各个权重参数的梯度；  
+- 步骤3-更新参数： 将权重参数沿梯度方向进行微小的更新；  
+- 步骤4-重复： 重复步骤1， 步骤2，步骤3； 
+
+【代码实现】
+
+### 【5.7,3】误差反向传播法的梯度确认
+
+<font color=red>我们介绍了两种求梯度的方法： 一种是基于数值微分计算，另一种是使用误差反向传播法高效计算梯度</font>；即，本文后面部分就不再使用数值微分计算梯度，而使用误差反向传播法计算梯度； 
+
+<font color=red>数值微分的作用-梯度确认</font>：在确认误差反向传播法的实现是否正确时，需要用到数值微分；
+
+<br>
+
+---
+
+# 【6】与学习相关的技巧 
+
+## 【6.1】参数的更新 
+
+<font color=red>最优化</font>： 寻找使得损失函数值尽可能小的参数的过程；
+
+<font color=red>随机梯度下降法-SGD (stochastic gradient descent)：</font> 随机梯度下降法是一种用于最小化目标函数的迭代优化算法。它每次不计算全部训练数据上的真实梯度，而是随机抽取一个样本（或一个小批量样本），用该样本损失函数的梯度作为真实梯度的随机估计，并沿负梯度方向更新模型参数；
+
+- 使用参数的梯度，沿梯度方向更新参数，并重复这个步骤多次，从而逐渐靠近最优参数的过程；
+
+### 【6.1.2】SGD-随机梯度下降法介绍
+
+SGD如下：
+$$
+W \leftarrow W-\eta\frac{\partial{L}}{\partial{W}} \tag{6.1}
+$$
+【公式说明】
+
+- 权重参数记为 $W$ ； 
+- 损失函数关于 $W$ 的梯度记为 $\frac{\partial{L}}{\partial{W}}$
+- $\eta$ 表示学习率， 实际上会取 0.01 或 0.001 这些事先决定好的值； 
+
+#### 【SGD代码实现】
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
